@@ -1,7 +1,7 @@
 PROJ = apriori
 CC = g++
 
-CFLAGS = -c -g -Wall
+CFLAGS = -std=c++11 -c -g -Wall
 OBJS = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
 
 all: $(PROJ)

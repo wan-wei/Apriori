@@ -43,7 +43,7 @@ std::set<int> split_by_space_and_dedup(std::string s) {
 	return ret;
 }
 
-std::vector<std::set<int> > file_process(char *filename) {
+std::vector<std::set<int> > file_process(char *filename, int cut_size) {
 	std::vector<std::set<int> > transactions;
 	std::ifstream ifs;
 	std::string buf;
@@ -55,7 +55,7 @@ std::vector<std::set<int> > file_process(char *filename) {
 	}
 	int cnt = 0;
 	while (getline(ifs, buf)) {
-		if (cnt == 10000) break;
+		if (cnt == cut_size) break;
 		cnt += 1;
 		// std::cout << buf << std::endl;
 		std::set<int> transaction = split_by_space_and_dedup(buf);
@@ -69,7 +69,7 @@ std::vector<std::set<int> > file_process(char *filename) {
 }
 
 int main(int argc, char **argv) {
-	int opt;
+	int opt, cut_size;
 	extern char *optarg;
 	extern int optind;
 	double timing, run_timing;
@@ -79,12 +79,15 @@ int main(int argc, char **argv) {
 	
 	filename = NULL;
 	min_support = 0.15;
+	cut_size = 100000000;
 
-	while ((opt=getopt(argc, argv, "i:s:m:")) != EOF) {
+	while ((opt=getopt(argc, argv, "i:s:c:")) != EOF) {
 		switch (opt) {
 			case 'i': filename=optarg;
 					  break;
 			case 's': min_support=atof(optarg);
+					  break;
+			case 'c': cut_size=atoi(optarg);
 					  break;
 		}
 	}
@@ -93,7 +96,7 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-	transactions = file_process(filename);
+	transactions = file_process(filename, cut_size);
 	if (transactions.size() == 0) {
 		return 0;
 	} else {

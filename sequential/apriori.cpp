@@ -4,6 +4,8 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace sequential {
 
