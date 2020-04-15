@@ -7,6 +7,23 @@
 #include <unistd.h>
 #include <fstream>
 #include <string>
+#include <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+double wtime(void) 
+{
+    double          now_time;
+    struct timeval  etstart;
+    struct timezone tzp;
+
+    if (gettimeofday(&etstart, &tzp) == -1)
+        perror("Error: calling gettimeofday() not successful.\n");
+
+    now_time = ((double)etstart.tv_sec) +              /* in seconds */
+               ((double)etstart.tv_usec) / 1000000.0;  /* in microseconds */
+    return now_time;
+}
 
 std::set<int> split_by_space_and_dedup(std::string s) {
 	std::set<int> ret;
@@ -33,13 +50,20 @@ std::vector<std::set<int> > file_process(char *filename) {
 
 	ifs.open(filename, std::ios::in);
 	if (!ifs.is_open()) {
-		std::cout << "fail to open file " << filename << std::endl;
+		printf("fail to open file %s\n", filename);
 		return transactions;
 	}
+	int cnt = 0;
 	while (getline(ifs, buf)) {
+		if (cnt == 10000) break;
+		cnt += 1;
 		// std::cout << buf << std::endl;
 		std::set<int> transaction = split_by_space_and_dedup(buf);
 		transactions.push_back(transaction);
+		// for (auto x : transaction) {
+		// 	std::cout << x << " ";
+		// }
+		// std::cout << std::endl;
 	}
 	return transactions;
 }
@@ -48,6 +72,7 @@ int main(int argc, char **argv) {
 	int opt;
 	extern char *optarg;
 	extern int optind;
+	double timing, run_timing;
 	char *filename;
 	float min_support;
 	std::vector<std::set<int> > transactions;
@@ -64,11 +89,19 @@ int main(int argc, char **argv) {
 		}
 	}
 	if (filename == 0) {
-		std::cout << "error: use -i filename" << std::endl;
+		printf("error: use -i filename\n");
 		return 0;
 	}
 
 	transactions = file_process(filename);
-	sequential::apriori(transactions, min_support);
+	if (transactions.size() == 0) {
+		return 0;
+	} else {
+		printf("start processing %d transactions...\n", int(transactions.size()));
+		timing = wtime();
+		sequential::apriori(transactions, min_support);
+		run_timing = wtime() - timing;
+		printf("Computation timing = %10.4f sec\n", run_timing);
+	}
 	return 0;
 }

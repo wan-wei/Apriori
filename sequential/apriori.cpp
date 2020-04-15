@@ -130,6 +130,7 @@ namespace sequential {
 		std::map<std::set<int>, float> ret;
 		std::set<std::set<int> > candidates;
 		std::map<std::set<int>, float> freqset;
+		int k;
 
 		// ---- generate candidate set with one element ----
 		for (int i = 0; i < transactions.size(); i ++) {
@@ -142,13 +143,16 @@ namespace sequential {
 
 		// ---- get one-freqset ----
 		freqset = generate_freqset(candidates, transactions, min_support, ret);
+		k = 1;
 
 		// ---- generate frequent set ----
 		while (!freqset.empty()) {
+			printf("k=%d, freqset size=%d\n", k, int(freqset.size()));
 			print_freqset_info(freqset);
 			candidates = generate_candidates(freqset);
-			print_candidates_info(candidates);
+			// print_candidates_info(candidates);
 			freqset = generate_freqset(candidates, transactions, min_support, ret);
+			k += 1;
 		}
 		print_freqset_info(ret);
 		return ret;
