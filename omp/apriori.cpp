@@ -85,23 +85,23 @@ namespace sequential {
 				
 
 				// ------------------- inline function --------------------
-				// bool f = true;
-				// for (unsigned int z = 0; z < cand.size(); z ++) {
-				// 	if (transactions[j].find(cand[z]) == transactions[j].end()) {
-				// 		f = false;
-				// 		break;
-				// 	}
-				// }
-				// if (f) {
-				// #pragma omp atomic
-				// 	set_count[i] += 1;
-				// }
-				
-				// ------------------- call function --------------------
-				if (is_subset(cand, transactions[j])) {
-					#pragma omp atomic
+				bool f = true;
+				for (unsigned int z = 0; z < cand.size(); z ++) {
+					if (transactions[j].find(cand[z]) == transactions[j].end()) {
+						f = false;
+						break;
+					}
+				}
+				if (f) {
+				#pragma omp atomic
 					set_count[i] += 1;
 				}
+				
+				// ------------------- call function --------------------
+				// if (is_subset(cand, transactions[j])) {
+				// 	#pragma omp atomic
+				// 	set_count[i] += 1;
+				// }
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace sequential {
 		   then consider it as the candidate.
 		*/
 		std::vector<std::vector<int> > candidates;
-		std::set<int> merged_set;
+		// std::set<int> merged_set;
 		std::set<std::set<int> > dup;
 		unsigned int k, f_size;
 
@@ -132,10 +132,16 @@ namespace sequential {
 		if (freqset.empty()) return candidates;
 		k = freqset[0].size();
 
+		// #pragma omp parallel for
 		for (unsigned int i = 0; i < f_size; i ++) {
-			for (unsigned int j = 0; j < f_size; j ++) {
-				if (i == j) continue;
-				merged_set = merge_set(freqset[i], freqset[j]);
+			for (unsigned int j = i + 1; j < f_size; j ++) {
+				// ---------------- inline function -----------------
+				// std::set<int> merged_set;
+				// merged_set.insert(freqset[i].begin(), freqset[i].end());
+				// merged_set.insert(freqset[j].begin(), freqset[j].end());
+
+				std::set<int> merged_set = merge_set(freqset[i], freqset[j]);
+				// #pragma omp critical
 				if (merged_set.size() == k + 1 && dup.find(merged_set) == dup.end()) {
 					candidates.push_back(std::vector<int>(merged_set.begin(), merged_set.end()));
 					dup.insert(merged_set);
