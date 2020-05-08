@@ -6,6 +6,7 @@
 #include <map>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 namespace sequential {
 
@@ -65,14 +66,13 @@ namespace sequential {
 												  	std::map<std::vector<int>, float>& ret)
 	{
 		std::vector<std::vector<int> > freqset;
-		std::map<std::vector<int>, int> set_count;
 		std::map<std::vector<int>, int>::iterator map_it;
 		int t_size = transactions.size();
 		int c_size = candidates.size();
+		int *set_count = new int[c_size + 10];
 
-		// Initialize the count map ahead
 		for (int i = 0; i < c_size; i ++) {
-			set_count[candidates[i]] = 0;
+			set_count[i] = 0;
 		}
 
 		#pragma omp parallel for
@@ -83,17 +83,17 @@ namespace sequential {
 				// then update set_count by one.
 				if (is_subset(candidates[i], transactions[j])) {
 					#pragma omp atomic
-					set_count[candidates[i]] += 1;
+					set_count[i] += 1;
 				}
 			}
 		}
 
 		// calculate the support value and compare it with the min_support
-		for (map_it = set_count.begin(); map_it != set_count.end(); map_it ++) {
-			float support_val = float(map_it->second) / t_size;
+		for (int i = 0; i < c_size; i ++) {
+			float support_val = float(set_count[i]) / t_size;
 			if (support_val >= min_support) {
-				freqset.push_back(map_it->first);
-				ret[map_it->first] = support_val;
+				freqset.push_back(candidates[i]);
+				ret[candidates[i]] = support_val;
 			}
 		}
 		return freqset;

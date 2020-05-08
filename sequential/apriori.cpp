@@ -150,7 +150,7 @@ namespace sequential {
 		// ---- generate frequent set ----
 		while (!freqset.empty()) {
 			printf("k=%d, freqset size=%d\n", k, int(freqset.size()));
-			print_freqset_info(freqset);
+			if (k >= 2) print_freqset_info(freqset);
 			candidates = generate_candidates(freqset);
 			// print_candidates_info(candidates);
 			freqset = generate_freqset(candidates, transactions, min_support, ret);
