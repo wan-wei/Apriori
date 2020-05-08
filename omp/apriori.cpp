@@ -28,12 +28,9 @@ namespace sequential {
 
 	void print_freqset_info(std::map<std::vector<int>, float> freqset) {
 		std::map<std::vector<int>, float>::iterator map_it;
-		int freq_k;
 
 		if (freqset.empty()) return;
-		freq_k = freqset.begin()->first.size();
 
-		std::cout << "---- freqset of k=" << freq_k << " ----\n";
 		for (map_it = freqset.begin(); map_it != freqset.end(); map_it ++) {
 			std::cout << "< ";
 			for (unsigned int i = 0; i < map_it->first.size(); i ++) {
@@ -186,6 +183,7 @@ namespace sequential {
 			freqset = generate_freqset(candidates, transactions, min_support, ans);
 			k += 1;
 		}
+		printf("------- all freqset size=%d -------\n", int(ans.size()));
 		print_freqset_info(ans);
 		
 		// move ans to ret
