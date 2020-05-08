@@ -59,12 +59,12 @@ namespace sequential {
 		return;
 	}
 
-	std::map<std::vector<int>, float> generate_freqset(std::vector<std::vector<int> >candidates,
+	std::vector<std::vector<int> > generate_freqset(std::vector<std::vector<int> >candidates,
 												  	std::vector<std::set<int> > transactions,
 												  	float min_support,
 												  	std::map<std::vector<int>, float>& ret)
 	{
-		std::map<std::vector<int>, float> freqset;
+		std::vector<std::vector<int> > freqset;
 		std::map<std::vector<int>, int> set_count;
 		std::map<std::vector<int>, int>::iterator map_it;
 		int t_size = transactions.size();
@@ -88,14 +88,14 @@ namespace sequential {
 		for (map_it = set_count.begin(); map_it != set_count.end(); map_it ++) {
 			float support_val = float(map_it->second) / t_size;
 			if (support_val >= min_support) {
-				freqset[map_it->first] = support_val;
+				freqset.push_back(map_it->first);
 				ret[map_it->first] = support_val;
 			}
 		}
 		return freqset;
 	}
 
-	std::vector<std::vector<int> > generate_candidates(std::map<std::vector<int>, float> freqset)
+	std::vector<std::vector<int> > generate_candidates(std::vector<std::vector<int> > freqset)
 	{
 		/* Generate candidate sets from freqset.
 		   Go over freqset and merge any two sets from it together.
@@ -103,18 +103,18 @@ namespace sequential {
 		   then consider it as the candidate.
 		*/
 		std::vector<std::vector<int> > candidates;
-		std::map<std::vector<int>, float>::iterator it1, it2;
 		std::set<int> merged_set;
 		std::set<std::set<int> > dup;
-		unsigned int k;
+		unsigned int k, f_size;
 
+		f_size = freqset.size();
 		if (freqset.empty()) return candidates;
-		k = freqset.begin()->first.size();
+		k = freqset[0].size();
 
-		for (it1 = freqset.begin(); it1 != freqset.end(); it1 ++) {
-			for (it2 = freqset.begin(); it2 != freqset.end(); it2 ++) {
-				if (it1 == it2) continue;
-				merged_set = merge_set(it1->first, it2->first);
+		for (unsigned int i = 0; i < f_size; i ++) {
+			for (unsigned int j = 0; j < f_size; j ++) {
+				if (i == j) continue;
+				merged_set = merge_set(freqset[i], freqset[j]);
 				if (merged_set.size() == k + 1 && dup.find(merged_set) == dup.end()) {
 					candidates.push_back(std::vector<int>(merged_set.begin(), merged_set.end()));
 					dup.insert(merged_set);
@@ -131,7 +131,8 @@ namespace sequential {
 		std::map<std::vector<int>, float> ans;
 		std::vector<std::vector<int> > candidates;
 		std::set<int> unique_identifier;
-		std::map<std::vector<int>, float> freqset;
+		// std::map<std::vector<int>, float> freqset;
+		std::vector<std::vector<int> > freqset;
 		int k;
 
 		// ---- generate candidate set with one element ----
