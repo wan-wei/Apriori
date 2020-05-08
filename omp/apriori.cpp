@@ -70,16 +70,20 @@ namespace sequential {
 		int t_size = transactions.size();
 		int c_size = candidates.size();
 
+		// Initialize the count map ahead
 		for (int i = 0; i < c_size; i ++) {
+			set_count[candidates[i]] = 0;
+		}
+
+		#pragma omp parallel for
+		for (int i = 0; i < c_size; i ++) {
+			#pragma omp parallel for
 			for (int j = 0; j < t_size; j ++) {
 				// if the candidate is the subset of transactions[i],
 				// then update set_count by one.
 				if (is_subset(candidates[i], transactions[j])) {
-					if (set_count.find(candidates[i]) == set_count.end()) {
-						set_count[candidates[i]] = 1;
-					} else {
-						set_count[candidates[i]] += 1;
-					}
+					#pragma omp atomic
+					set_count[candidates[i]] += 1;
 				}
 			}
 		}
@@ -131,7 +135,6 @@ namespace sequential {
 		std::map<std::vector<int>, float> ans;
 		std::vector<std::vector<int> > candidates;
 		std::set<int> unique_identifier;
-		// std::map<std::vector<int>, float> freqset;
 		std::vector<std::vector<int> > freqset;
 		int k;
 
