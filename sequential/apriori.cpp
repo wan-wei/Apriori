@@ -110,7 +110,7 @@ namespace sequential {
 		std::set<std::set<int> > candidates;
 		std::map<std::set<int>, float>::iterator it1, it2;
 		std::set<int> merged_set;
-		int k;
+		unsigned int k;
 
 		if (freqset.empty()) return candidates;
 		k = freqset.begin()->first.size();
@@ -135,7 +135,7 @@ namespace sequential {
 		int k;
 
 		// ---- generate candidate set with one element ----
-		for (int i = 0; i < transactions.size(); i ++) {
+		for (unsigned int i = 0; i < transactions.size(); i ++) {
 			std::set<int>::iterator it = transactions[i].begin();
 			for (; it != transactions[i].end(); it ++) {
 				int tmp[1] = {*it};
