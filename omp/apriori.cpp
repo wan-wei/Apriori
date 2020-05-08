@@ -77,11 +77,28 @@ namespace sequential {
 
 		#pragma omp parallel for
 		for (int i = 0; i < c_size; i ++) {
+			std::vector<int> cand = candidates[i];
 			#pragma omp parallel for
 			for (int j = 0; j < t_size; j ++) {
 				// if the candidate is the subset of transactions[i],
 				// then update set_count by one.
-				if (is_subset(candidates[i], transactions[j])) {
+				
+
+				// ------------------- inline function --------------------
+				// bool f = true;
+				// for (unsigned int z = 0; z < cand.size(); z ++) {
+				// 	if (transactions[j].find(cand[z]) == transactions[j].end()) {
+				// 		f = false;
+				// 		break;
+				// 	}
+				// }
+				// if (f) {
+				// #pragma omp atomic
+				// 	set_count[i] += 1;
+				// }
+				
+				// ------------------- call function --------------------
+				if (is_subset(cand, transactions[j])) {
 					#pragma omp atomic
 					set_count[i] += 1;
 				}

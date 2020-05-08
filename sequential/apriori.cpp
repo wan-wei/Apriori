@@ -76,10 +76,31 @@ namespace sequential {
 		int t_size = transactions.size();
 
 		for (it = candidates.begin(); it != candidates.end(); it ++) {
+			std::set<int> cand = *it;
 			for (int i = 0; i < t_size; i ++) {
 				// if the candidate is the subset of transactions[i],
 				// then update set_count by one.
-				if (is_subset(*it, transactions[i])) {
+				
+
+				// ----------------- inline function -----------------
+				// bool f = true;
+				// for (std::set<int>::iterator z = cand.begin(); z != cand.end(); z ++) {
+				// 	if (transactions[i].find(*z) == transactions[i].end()) {
+				// 		f = false;
+				// 		break;
+				// 	}
+				// }
+
+				// if (f) {
+				// 	if (set_count.find(*it) == set_count.end()) {
+				// 		set_count[*it] = 1;
+				// 	} else {
+				// 		set_count[*it] += 1;
+				// 	}
+				// }
+
+				// ----------------- call function -----------------
+				if (is_subset(cand, transactions[i])) {
 					if (set_count.find(*it) == set_count.end()) {
 						set_count[*it] = 1;
 					} else {
