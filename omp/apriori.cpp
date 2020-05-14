@@ -57,7 +57,7 @@ namespace sequential {
 		return;
 	}
 
-	std::vector<std::vector<int> > generate_freqset(std::vector<std::vector<int> >candidates,
+	std::vector<std::vector<int> > prune_candidates(std::vector<std::vector<int> >candidates,
 												  	std::vector<std::set<int> > transactions,
 												  	float min_support,
 												  	std::map<std::vector<int>, float>& ret)
@@ -170,17 +170,17 @@ namespace sequential {
 			}
 		}
 
-		// ---- get one-freqset ----
-		freqset = generate_freqset(candidates, transactions, min_support, ans);
+		// ---- prune 1-item candidates ----
+		freqset = prune_candidates(candidates, transactions, min_support, ans);
 		k = 1;
 
-		// ---- generate frequent set ----
+		// ---- iteratively performing ----
 		while (!freqset.empty()) {
 			printf("k=%d, freqset size=%d\n", k, int(freqset.size()));
 			// print_freqset_info(freqset);
 			candidates = generate_candidates(freqset);
 			// print_candidates_info(candidates);
-			freqset = generate_freqset(candidates, transactions, min_support, ans);
+			freqset = prune_candidates(candidates, transactions, min_support, ans);
 			k += 1;
 		}
 		printf("------- all freqset size=%d -------\n", int(ans.size()));
